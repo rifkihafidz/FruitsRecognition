@@ -1,41 +1,31 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, Text } from 'react-native'
 import * as tf from '@tensorflow/tfjs'
 import '@tensorflow/tfjs-react-native'
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native'
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isTfReady: false,
-    };
-  }
+const TestPage = () => {
+  const modelJSON = require('../../assets/Model/model.json');
+  const modelWeights = require('../../assets/Model/group1-shard.bin');
+  const [tfReady, setTfReady] = useState(null);
+  const [modelReady, setModelReady] = useState(null);
 
-  async componentDidMount() {
-    // Wait for tf to be ready.
+  useEffect(async () => {
     await tf.ready();
-    // Signal to the app that tensorflow.js can now be used.
-    this.setState({
-      isTfReady: true,
-    });
-  }
+    setTfReady(true);
+    const model = await tf.loadLayersModel(bundleResourceIO(modelJSON, modelWeights));
+    setModelReady(true);
+    return () => {
+      cleanup
+    }
+  }, []);
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>TFJS ready? {this.state.isTfReady ? <Text>Yes</Text> : ''}</Text>
-      </View>
-    )
-  }
+  return (
+    <View>
+      <Text>TFJS Status : {tfReady ? <Text>Yes</Text> : <Text>No</Text>}</Text>
+      <Text>Model Status : {modelReady ? <Text>Yes</Text> : <Text>No</Text>}</Text>
+    </View>
+  )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-})
-
-export default App
+export default TestPage

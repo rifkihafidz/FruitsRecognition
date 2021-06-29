@@ -1,16 +1,43 @@
-import React from 'react'
-import { Text, View } from 'react-native'
-import { RNCamera } from 'react-native-camera'
+import React, { useState, useEffect } from 'react';
+import { Text, View, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { BackButton } from '../../components'
+import { Camera } from 'expo-camera';
+import * as tf from '@tensorflow/tfjs'
+import '@tensorflow/tfjs-react-native'
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native'
+import { model } from '@tensorflow/tfjs';
 
 const Scan = ({ navigation }) => {
-  // const takePicture = async () => {
-  //   if (this.camera) {
-  //     const options = { quality: 0.5, base64: true };
-  //     const data = await this.camera.takePictureAsync(options);
-  //     console.log(data.uri);
-  //   }
-  // };
+  const [tfReady, setTfReady] = useState(false);
+  const [modelReady, setModelReady] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
+
+  useEffect(async () => {
+    // Check Tensorflow Ready
+    await tf.ready();
+    setTfReady(true);
+    // Check Model Ready
+    const modelJSON = require('../../assets/Model/model.json');
+    const modelWeights = require('../../assets/Model/group1-shard.bin');
+    await tf.loadLayersModel(bundleResourceIO(modelJSON, modelWeights));
+    setModelReady(true);
+  });
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Camera.requestPermissionsAsync();
+  //     setHasPermission(status === 'granted');
+  //   })();
+  // }, []);
+
+  // if (hasPermission === null) {
+  //   return <Text>Null permission</Text>;
+  // }
+  // if (hasPermission === false) {
+  //   return <Text>No access to camera</Text>;
+  // }
+
   return (
     <View style={styles.wrapper.mainWrapper}>
       <View style={{ flexDirection: 'row' }}>
@@ -20,32 +47,19 @@ const Scan = ({ navigation }) => {
         </View>
       </View>
       <View style={{ flex: 1 }}>
-        <RNCamera
-          ref={ref => {
-            this.camera = ref;
-          }}
-          style={styles.RNCamera}
-          type={RNCamera.Constants.Type.back}
-          flashMode={RNCamera.Constants.FlashMode.on}
-          androidCameraPermissionOptions={{
-            title: 'Permission to use camera',
-            message: 'We need your permission to use your camera',
-            buttonPositive: 'Ok',
-            buttonNegative: 'Cancel',
-          }}
-          androidRecordAudioPermissionOptions={{
-            title: 'Permission to use audio recording',
-            message: 'We need your permission to use your audio',
-            buttonPositive: 'Ok',
-            buttonNegative: 'Cancel',
-          }}
-          onGoogleVisionBarcodesDetected={({ barcodes }) => {
-            console.log(barcodes);
-          }}
-        />
-      </View>
-      <View>
-        <Text>Test</Text>
+        <Camera style={{
+          flex: 1,
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }} type={type}>
+        </Camera>
+        <View style={{ alignItems: 'center' }}>
+          <TouchableOpacity style={{ width: 30, height: 30 }} onPress={() => { setType(type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back); }}><Text style={{ textAlign: 'center' }}>Flip</Text></TouchableOpacity>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={{ textAlign: 'center' }}>Tensorflow Ready? {tfReady ? <Text>Yes</Text> : <Text>No</Text>}</Text>
+          <Text style={{ textAlign: 'center' }}>Model Ready? {modelReady ? <Text>Yes</Text> : <Text>No</Text>}</Text>
+        </View>
       </View>
     </View >
   )
