@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, TouchableOpacity, Text, BackHandler } from 'react-native'
 import { Gap } from '../../components';
-import { IconExit, IconInformation, IconOnly, IconScan } from '../../assets';
+import { IconExit, IconGuide, IconInformation, IconOnly, IconScan } from '../../assets';
 
 
 const Home = ({ navigation }) => {
@@ -19,16 +19,23 @@ const Home = ({ navigation }) => {
             <Text style={styles.text.textMenu}>Scan</Text>
           </TouchableOpacity>
           <Gap width={60} />
+          <TouchableOpacity onPress={() => navigation.navigate('Guide')}>
+            <IconGuide width={110} height={110} />
+            <Text style={styles.text.textMenu}>Guide</Text>
+          </TouchableOpacity>
+        </View>
+        <Gap height={20} />
+        <View style={{ flexDirection: 'row' }}>
           <TouchableOpacity onPress={() => navigation.navigate('About')}>
             <IconInformation width={110} height={110} />
             <Text style={styles.text.textMenu}>About</Text>
           </TouchableOpacity>
+          <Gap width={60} />
+          <TouchableOpacity onPress={() => BackHandler.exitApp()}>
+            <IconExit width={110} height={110} />
+            <Text style={styles.text.textMenu}>Exit</Text>
+          </TouchableOpacity>
         </View>
-        <Gap height={20} />
-        <TouchableOpacity onPress={() => BackHandler.exitApp()}>
-          <IconExit width={110} height={110} />
-          <Text style={styles.text.textMenu}>Exit</Text>
-        </TouchableOpacity>
       </View>
     </View >
   )

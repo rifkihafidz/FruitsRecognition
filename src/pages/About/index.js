@@ -7,7 +7,13 @@ import { BackButton } from '../../components';
 const About = ({ navigation }) => {
   return (
     <View style={styles.wrapper.mainWrapper}>
-      <BackButton onPress={() => navigation.goBack()} />
+      <View style={{ flexDirection: 'row' }}>
+        <BackButton onPress={() => navigation.goBack()} />
+        <View style={{ justifyContent: 'center', flex: 1 }}>
+          <Text style={{ textAlign: 'center', fontSize: 20, color: '#FFFFFF', fontWeight: 'bold', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 10, textAlign: 'center', marginRight: 60 }}>ABOUT</Text>
+        </View>
+      </View>
+      <Gap height={6} />
       <View style={styles.wrapper.logoWrapper}>
         <IconOnly width={300} height={150} />
       </View>
